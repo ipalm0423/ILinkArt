@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="8px" height="14px" viewBox="0 0 8 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 3.8.1 (29687) - http://www.bohemiancoding.com/sketch -->
+    <title>icon/more</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="我的" transform="translate(-343.000000, -129.000000)" fill="#979797">
+            <path d="M350.851783,135.424121 L343.984708,129.167287 C343.75937,128.944238 343.394484,128.944238 343.168574,129.167287 C342.943809,129.390337 342.943809,129.756368 343.168574,129.979418 L349.621577,135.858782 L343.168574,141.743867 C342.943809,141.966916 342.943809,142.327228 343.168574,142.555997 C343.394484,142.779047 343.75937,142.779047 343.984708,142.555997 L350.851783,136.299163 C350.971887,136.179059 351.02336,136.018921 351.015353,135.858782 C351.02336,135.704363 350.971887,135.544225 350.851783,135.424121" id="icon/more"></path>
+        </g>
+    </g>
+</svg>

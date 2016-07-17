@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="9px" height="5px" viewBox="0 0 9 5" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 3.8.1 (29687) - http://www.bohemiancoding.com/sketch -->
+    <title>icon/down</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="首页" transform="translate(-94.000000, -101.000000)" fill="#4A4A4A">
+            <path d="M102.480831,101.104668 C102.340199,100.965111 102.112613,100.965111 101.972697,101.104668 L98.2926602,105.144693 L94.6133394,101.104668 C94.4730658,100.965111 94.2454789,100.965111 94.1052052,101.104668 C93.9649316,101.247805 93.9649316,101.476823 94.1052052,101.616381 L98.0210589,105.914051 C98.0958477,105.989198 98.1949697,106.021403 98.2926602,106.014247 C98.3907087,106.021403 98.4898306,105.989198 98.5649772,105.914051 L102.480831,101.616381 C102.620747,101.476823 102.620747,101.247805 102.480831,101.104668" id="icon/down"></path>
+        </g>
+    </g>
+</svg>

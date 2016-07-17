@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="67px" height="69px" viewBox="0 0 67 69" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 3.8.1 (29687) - http://www.bohemiancoding.com/sketch -->
+    <title>icon/avater</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <ellipse id="path-1" cx="33.5" cy="34.5" rx="33.5" ry="34.5"></ellipse>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="我的" transform="translate(-22.000000, -102.000000)">
+            <g id="icon/avater" transform="translate(22.000000, 102.000000)">
+                <g id="Avatar-Placeholder-(40x40)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <use id="Circle" fill="#CDCDD3" xlink:href="#path-1"></use>
+                    <path d="M7.79314139,56.0831927 L7.67708333,68.1962069 C7.67708333,71.810574 9.60944991,74.7677835 11.9712313,74.7677835 L54.9127107,74.7677835 C57.274492,74.7677835 59.2068586,71.810574 59.2068586,68.1962069 L59.3229167,56.0831927 C59.3229167,56.0831927 49.9831449,42.9400395 33.558029,42.9400395 C17.1329132,42.9400395 7.79314139,56.0831927 7.79314139,56.0831927 Z M46.5467676,24.2778825 C46.5467676,31.6492031 40.7018352,37.6802835 33.558029,37.6802835 C26.4142228,37.6802835 20.5692905,31.6492031 20.5692905,24.2778825 C20.5692905,16.906562 26.4142228,10.8754815 33.558029,10.8754815 C40.7018352,10.8754815 46.5467676,16.906562 46.5467676,24.2778825 Z" id="Avatar" fill="#F2F2F4" mask="url(#mask-2)"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
