@@ -29,4 +29,8 @@
 #define URLBecome @"http://www.ilinkart.com/artist/welcome"
 #define URLVersion @"http://www.ilinkart.com/about"
 #define URLLogout @"http://www.ilinkart.com/logout"
+#define URLCopyRight @"http://www.ilinkart.com/faq-copyright"
+
+
+
 #endif /* ILAUrl_h */

@@ -15,7 +15,7 @@
 -(instancetype)init{
     if (self = [super init]) {
         self.categoriesDic = [NSMutableDictionary new];
-        
+        self.kartCount = 0;
     }
     
     return self;
@@ -30,6 +30,7 @@
         self.fbLogInRequest = [aDecoder decodeObjectForKey:@"fbLogInRequest"];
         self.weChatLogInRequest = [aDecoder decodeObjectForKey:@"weChatLogInRequest"];
         self.categoriesDic = [aDecoder decodeObjectForKey:@"categoriesDic"];
+        self.kartCount = [[aDecoder decodeObjectForKey:@"kartCount"]integerValue];
     }
     return self;
 }
@@ -42,6 +43,7 @@
     [aCoder encodeObject:self.fbLogInRequest forKey:@"fbLogInRequest"];
     [aCoder encodeObject:self.weChatLogInRequest forKey:@"weChatLogInRequest"];
     [aCoder encodeObject:self.categoriesDic forKey:@"categoriesDic"];
+    [aCoder encodeObject:[NSNumber numberWithInteger:self.kartCount] forKey:@"kartCount"];
 }
 
 

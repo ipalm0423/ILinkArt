@@ -18,6 +18,8 @@
     NSUserDefaults *userDefaults;
     AppDelegate *appDelegate;
     dispatch_queue_t userDataQueue;
+    
+    
 }
 
 
@@ -50,6 +52,8 @@ static ILAService *sharedService = nil;
     return self;
 }
 
+
+
 #pragma mark - save
 -(void)loadDefaultUser {
     NSData *encodedObject = [userDefaults objectForKey:@"defaultUser"];
@@ -77,6 +81,7 @@ static ILAService *sharedService = nil;
 }
 
 
+#pragma mark - Parser
 -(void)updateCategoryFromWeb:(UIWebView*)webView{
     NSArray *returnvalue = [[webView stringByEvaluatingJavaScriptFromString:PARSERCategory] JSONValueFromString];
     dispatch_barrier_async(userDataQueue, ^{
@@ -110,6 +115,31 @@ static ILAService *sharedService = nil;
     
 }
 
+-(void)updateNameAndIconFromWeb:(UIWebView*)webView{
+    NSDictionary *returnvalue = [[webView stringByEvaluatingJavaScriptFromString:PARSERNameAndIcon] JSONValueFromString];
+    
+    if (returnvalue) {
+        self.iLAUser.name = [returnvalue objectForKey:@"user_name"];
+        self.iLAUser.imageUrl = [returnvalue objectForKey:@"avatar_url"];
+        [self saveAllChange];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter]postNotificationName:NOTIFICATIONUpdateUserInfo object:nil];
+        });
+    }
+}
+
+-(void)updateKartCountAndLogIn:(UIWebView*)webView{
+    NSDictionary *returnvalue = [[webView stringByEvaluatingJavaScriptFromString:PARSERKartCount] JSONValueFromString];
+    if (returnvalue) {
+        BOOL isLogIn = [[returnvalue objectForKey:@"status"]boolValue];
+        self.iLAUser.kartCount = isLogIn ? [[returnvalue objectForKey:@"cart_count"]integerValue]:0;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter]postNotificationName:NOTIFICATIONUpdateUserInfo object:nil];
+        });
+    }
+}
+
 #pragma mark - auto log in
 -(NSURLRequest*)getAutoLogInRequest{
     if (self.iLAUser.logInRequest) {
@@ -121,6 +151,14 @@ static ILAService *sharedService = nil;
     }
     
     return nil;
+}
+
+-(BOOL)checkIfUserLogIn{
+    if ([self getAutoLogInRequest]) {
+        return YES;
+    }else{
+        return NO;
+    }
 }
 
 -(void)checkAutoLogIn:(NSURLRequest*)request{

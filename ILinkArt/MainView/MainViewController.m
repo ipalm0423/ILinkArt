@@ -11,7 +11,7 @@
 #import "AccountListViewController.h"
 #import "CategoryListViewController.h"
 
-@interface MainViewController ()<UIWebViewDelegate>
+@interface MainViewController ()<UIWebViewDelegate, UISearchBarDelegate, UIScrollViewDelegate>
 
 @end
 
@@ -23,7 +23,7 @@
     CategoryListViewController *categoryListVC;
     AccountListViewController *accountListVC;
     
-    BOOL isLogIn;
+    NSString *searchType;
 }
 
 - (void)viewDidLoad {
@@ -31,13 +31,17 @@
     // Do any additional setup after loading the view.
     iLAService = [ILAService sharedController];
     
+    self.searchBar.delegate = self;
+    
+    searchType = @"product";
+    
     //view
     [self setupSearchBarView];
     [self setupTapBar];
     [self setupWebView];
     
     //LOAD
-    isLogIn = NO;
+    
     NSURLRequest *loginRequest = [iLAService getAutoLogInRequest];
     if (loginRequest) {
         NSLog(@"have auto log in, start log in");
@@ -67,6 +71,7 @@
 #pragma mark - view setup
 -(void)setupWebView{
     self.webView.delegate = self;
+    self.webView.scrollView.delegate = self;
     
     urlHistoryByIndex = [NSMutableArray arrayWithObjects:[NSMutableArray arrayWithObject:URLHomepage],[NSMutableArray arrayWithObject:@"categoryVC"],[NSMutableArray arrayWithObject:URLArtist],[NSMutableArray arrayWithObject:URLMessage],[NSMutableArray arrayWithObject:@"accountVC"], nil];
     [self selectOnTabBarButton:0];
@@ -163,11 +168,21 @@
     [self.indicatorWeb stopAnimating];
     self.indicatorWeb.alpha = 0;
     webView.alpha = 1;
+    
+    if ([webView.request.URL.absoluteString isEqualToString:URLAccount] || [webView.request.URL.absoluteString isEqualToString:URLMyOrder]) {
+        [[ILAService sharedController]updateNameAndIconFromWeb:webView];
+        [[ILAService sharedController]updateKartCountAndLogIn:webView];
+    }
     //load homepage
     if ([webView.request.URL.absoluteString isEqualToString:URLHomepage]) {
         [[ILAService sharedController]updateCategoryFromWeb:webView];
+        
     }
-    
+    if ([webView.request.URL.absoluteString isEqualToString:URLLogout]) {
+        NSLog(@"log out");
+        //clear history
+        urlHistoryByIndex = [NSMutableArray arrayWithObjects:[NSMutableArray arrayWithObject:URLHomepage],[NSMutableArray arrayWithObject:@"categoryVC"],[NSMutableArray arrayWithObject:URLArtist],[NSMutableArray arrayWithObject:URLMessage],[NSMutableArray arrayWithObject:@"accountVC"], nil];
+    }
     
     
 }
@@ -191,8 +206,8 @@
         //check auto login
         [iLAService checkAutoLogIn:request];
     }else{
-        if ([request.URL.absoluteString isEqualToString:@"http://www.ilinkart.com/artist/welcome"] && !isLogIn) {
-            isLogIn = YES;
+        if ([request.URL.absoluteString isEqualToString:@"http://www.ilinkart.com/artist/welcome"] && [iLAService checkIfUserLogIn]) {
+            
             [self loadWebRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:URLHomepage]]];
         }
         
@@ -202,6 +217,22 @@
     [self reloadLeftNaviButtonImage];
     
     return YES;
+}
+
+
+#pragma mark - scroll view
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    
+    float max = self.webView.scrollView.contentSize.height - self.webView.bounds.size.height;
+    if (self.webView.scrollView.contentOffset.y > max) {
+        [self.webView.scrollView setContentOffset: CGPointMake(0.0f, max)];
+    }
+    if (self.webView.scrollView.contentOffset.y < 0) {
+        [self.webView.scrollView setContentOffset: CGPointMake(0.0f, 0.0f)];
+    }
+    
+    
+    
 }
 
 #pragma mark - Animate
@@ -244,6 +275,12 @@
 
 #pragma mark - tab bar
 -(void)selectOnTabBarButton:(NSInteger)index{
+    //double tap
+    if (index == tapIndex) {
+        [self clearHistoryList:index];
+        
+    }
+    
     tapIndex = index;
     [self animateTabBarButtonImageForIndex:index];
     [self reloadLeftNaviButtonImage];
@@ -257,14 +294,15 @@
     if (index != 4) {
         [accountListVC.view removeFromSuperview];
     }
-    if (index != 0) {
-        [self.subviewSearch needsUpdateConstraints];
-        self.subviewSearch.alpha = 0;
-        self.constraintSearchBarHeight.constant = 0;
-    }else{
+    if (index == 0 || index == 1) {
         [self.subviewSearch needsUpdateConstraints];
         self.subviewSearch.alpha = 1;
         self.constraintSearchBarHeight.constant = 44;
+    }else{
+        [self.subviewSearch needsUpdateConstraints];
+        self.subviewSearch.alpha = 0;
+        self.constraintSearchBarHeight.constant = 0;
+        
     }
     
     if (index == 0) {
@@ -303,6 +341,11 @@
             [self loadWebRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:lastURL]]];
         }
     }
+}
+
+-(void)clearHistoryList:(NSInteger)index{
+    NSMutableArray *cleanArray = [NSMutableArray arrayWithObject:[[urlHistoryByIndex objectAtIndex:tapIndex] objectAtIndex:0]];
+    [urlHistoryByIndex replaceObjectAtIndex:index withObject:cleanArray];
 }
 
 #pragma mark - button
@@ -382,16 +425,56 @@
 #pragma mark - Search button
 - (IBAction)buttonSearchTypeTouch:(UIButton *)sender {
     NSLog(@"search type button touch");
+    UIAlertController *control = [UIAlertController alertControllerWithTitle:@"搜 寻" message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
+    UIAlertAction *actionProduct = [UIAlertAction actionWithTitle:@"商品" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self.ButtonSearchItem setTitle:@"商品" forState:UIControlStateNormal];
+        searchType = @"product";
+    }];
+    UIAlertAction *actionArticle = [UIAlertAction actionWithTitle:@"作品" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self.ButtonSearchItem setTitle:@"作品" forState:UIControlStateNormal];
+        searchType = @"artwork";
+    }];
+    UIAlertAction *actionArtist = [UIAlertAction actionWithTitle:@"创作者" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [self.ButtonSearchItem setTitle:@"创作者" forState:UIControlStateNormal];
+        searchType = @"artist";
+    }];
+    
+    [control addAction:actionProduct];
+    [control addAction:actionArticle];
+    [control addAction:actionArtist];
+    
+    [self presentViewController:control animated:YES completion:nil];
     
 }
 
+#pragma mark - search bar
+-(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
+    NSLog(@"search button click");
+    NSString *url = [NSString stringWithFormat:@"http://www.ilinkart.com/site/search?search-type=%@&search-keyword=%@",searchType, [searchBar.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    [self.view endEditing:YES];
+    NSLog(@"search for:%@", url);
+    
+    [self loadWebURL:url];
+}
 
 #pragma mark - notify
 -(void)getNotificationLoadWebUrl:(NSNotification*)notify{
     NSInteger index = [notify.userInfo[@"index"]integerValue];
     NSString *url = notify.userInfo[@"url"];
     
-    [self loadWebURL:url];
+    
+    
+    if ([url isEqualToString:URLLogout]) {
+        NSLog(@"log out");
+        //clear history
+        
+        [self selectOnTabBarButton:0];
+        [self loadWebURL:URLLogout];
+    }else{
+        
+        [self loadWebURL:url];
+    }
+    
 }
 
 /*

@@ -16,6 +16,8 @@
 @property NSURLRequest *logInRequest;
 @property NSURLRequest *fbLogInRequest;
 @property NSURLRequest *weChatLogInRequest;
+@property NSInteger kartCount;
+
 
 //cate
 @property (strong, atomic) NSMutableDictionary *categoriesDic;

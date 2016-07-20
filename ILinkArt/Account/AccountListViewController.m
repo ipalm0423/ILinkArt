@@ -16,6 +16,9 @@
 @end
 
 @implementation AccountListViewController{
+    
+    ILAService *ilaService;
+    
     NSMutableArray *nameList;
     NSMutableArray *iconList;
     NSMutableArray *urlList;
@@ -25,6 +28,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    ilaService = [ILAService sharedController];
     
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -32,14 +36,35 @@
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.tableFooterView = [[UIView alloc]init];
     
-    iconList = [NSMutableArray arrayWithObjects:@"iconHelp", @"iconPhone", @"iconAbout", @"iconBecome", @"iconVersion", @"iconPrivacy", @"iconService", @"iconLogout", nil];
-    nameList = [NSMutableArray arrayWithObjects:@"常见问题", @"客服资讯", @"关于创世连结", @"成为创作者", @"版本资讯", @"隐私条款", @"服务条款", @"登出", nil];
-    urlList = [NSMutableArray arrayWithObjects:URLHelp, URLContact, URLAbout, URLBecome, URLVersion, URLPrivacy, URLTerms, URLLogout, nil];
+    [self setupDataArray];
     
-    [self.tableView reloadData];
+    
+    
+    
     
     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(getNotification:) name:NOTIFICATIONUpdateUserInfo object:nil];
     
+}
+
+-(void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self setupDataArray];
+    [self.tableView reloadData];
+}
+
+-(void)setupDataArray{
+    if (![[ILAService sharedController]checkIfUserLogIn]) {
+        //未登入
+        
+        iconList = [NSMutableArray arrayWithObjects:@"iconHelp", @"iconPhone", @"iconAbout", @"iconBecome", @"iconFee", @"iconVersion", @"iconPrivacy", @"iconService", nil];
+        nameList = [NSMutableArray arrayWithObjects:@"帮助", @"客服资讯", @"关于世创连结", @"成为创作者", @"关于版权费", @"版本资讯", @"隐私条款", @"服务条款", nil];
+        urlList = [NSMutableArray arrayWithObjects:URLHelp, URLContact, URLAbout, URLBecome, URLCopyRight,URLVersion, URLPrivacy, URLTerms, nil];
+        
+    }else{
+        iconList = [NSMutableArray arrayWithObjects:@"iconHelp", @"iconPhone", @"iconAbout", @"iconBecome", @"iconFee", @"iconVersion", @"iconPrivacy", @"iconService", @"iconLogout", nil];
+        nameList = [NSMutableArray arrayWithObjects:@"帮助", @"客服资讯", @"关于世创连结", @"成为创作者", @"关于版权费", @"版本资讯", @"隐私条款", @"服务条款", @"登出", nil];
+        urlList = [NSMutableArray arrayWithObjects:URLHelp, URLContact, URLAbout, URLBecome, URLCopyRight,URLVersion, URLPrivacy, URLTerms,URLLogout, nil];
+    }
 }
 
 -(void)dealloc{
@@ -52,11 +77,6 @@
     // Dispose of any resources that can be recreated.
 }
 
--(void)viewWillAppear:(BOOL)animated{
-    [super viewWillAppear:animated];
-    
-    [self.tableView reloadData];
-}
 
 
 #pragma mark - table
@@ -76,6 +96,15 @@
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     if (indexPath.section == 0) {
         AccountProfileTableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AccountProfile" forIndexPath:indexPath];
+        if ([[ILAService sharedController]checkIfUserLogIn]) {
+            [cell.buttonOrders setTitle:@"订单纪录" forState:UIControlStateNormal];
+            cell.labelName.text = ilaService.iLAUser.name;
+        }else{
+            [cell.buttonOrders setTitle:@"登 入" forState:UIControlStateNormal];
+            cell.labelName.text = @"尚未登入";
+        }
+        
+        
         return cell;
     }else{
         AccountLabelTableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"AccountLabel" forIndexPath:indexPath];
@@ -92,7 +121,8 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     NSLog(@"tap on section:%li row:%li", indexPath.section, indexPath.row);
     if (indexPath.section == 0) {
-        
+        [self postNotification:URLAccount];
+        [self.view removeFromSuperview];
     }else{
         NSString *url = [urlList objectAtIndex:indexPath.row];
         
@@ -106,6 +136,11 @@
     
 }
 
+- (IBAction)buttonOrderListTouch:(UIButton *)sender {
+    
+    [self postNotification:URLMyOrder];
+    [self.view removeFromSuperview];
+}
 
 #pragma mark notify
 -(void)getNotification:(NSNotification*)notify{

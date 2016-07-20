@@ -20,11 +20,16 @@
 
 
 + (id)sharedController;
--(void)updateCategoryFromWeb:(UIWebView*)webView;
+
 
 
 //log in
 -(NSURLRequest*)getAutoLogInRequest;
 -(void)checkAutoLogIn:(NSURLRequest*)request;
+-(BOOL)checkIfUserLogIn;
 
+#pragma MARK - PARSER
+-(void)updateNameAndIconFromWeb:(UIWebView*)webView;
+-(void)updateCategoryFromWeb:(UIWebView*)webView;
+-(void)updateKartCountAndLogIn:(UIWebView*)webView;
 @end
